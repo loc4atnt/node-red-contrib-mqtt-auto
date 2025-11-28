@@ -1,5 +1,4 @@
-# node-red-contrib-mqtt-auto: FORK of [node-red-contrib-mqtt-auto](https://github.com/malys/node-red-contrib-mqtt-auto) to integrate fixes
-## which is a FORK of [node-red-contrib-mqtt-auto](https://github.com/eltonssilva/node-red-contrib-mqtt-auto)
+# node-red-contrib-mqtt-auto: FORK of [node-red-contrib-mqtt-auto](https://github.com/arifhosan/node-red-contrib-mqtt-auto) to integrate fixes.
 
 This node is intended to facilitate connection and change of connection credentials at runtime. <br>
 
