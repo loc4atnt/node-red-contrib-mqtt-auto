@@ -33,9 +33,10 @@ module.exports = class DynMQTT {
         let client = this.getConnectedClient(id)
         if (client) {
             client.close();
-            delete DynMQTT.clients[id];
+            delete DynMQTT.clients[id];// ensure the client is removed from the list
             return true;
         } else {
+            delete DynMQTT.clients[id];// ensure the client is removed from the list
             return false;
         }
     }
