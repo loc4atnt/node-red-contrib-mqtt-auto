@@ -30,9 +30,9 @@ module.exports = class DynMQTT {
     }
 
     static closeClient(id) {
-        let client = this.getConnectedClient(id)
-        if (client) {
-            client.close();
+        let client = this.getClient(id);
+        if (client && client.status == "connected") {
+            client.close();// close
             delete DynMQTT.clients[id];// ensure the client is removed from the list
             return true;
         } else {
