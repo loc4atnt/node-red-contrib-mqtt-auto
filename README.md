@@ -16,7 +16,8 @@ msg.payload = {
   "host": "locahost",
   "user": "user",
   "password": "password",
-  "reconnect_t" : 1, // 0 No Reconect  1 AutoReconnect
+  "reconnect" : 1, // 0 No Reconect  1 AutoReconnect
+  "protocol": "mqtt", // mqtt/mqtts/ws/wss
 };
 ```
 

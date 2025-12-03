@@ -102,7 +102,7 @@ module.exports = class DynMQTT {
 
         this.change_status('initiated');
 
-        let protocole = this.protocol === 'ws' ? 'ws://' : 'mqtt://';
+        let protocole = this.protocol === 'wss' ? 'wss://' : this.protocol === 'ws' ? 'ws://' : this.protocol === 'mqtts' ? 'mqtts://' : 'mqtt://';
         let options = {
             clientId: this.client_id,
             username: this.user,
@@ -117,7 +117,7 @@ module.exports = class DynMQTT {
                 cert: fs.readFileSync(this.cert_path),
                 ca: [fs.readFileSync(this.ca_path)],
             });
-            protocole = this.protocol === 'ws' ? 'wss://' : 'mqtts://';
+            protocole = (this.protocol === 'ws' || this.protocol === 'wss') ? 'wss://' : 'mqtts://';
         }
 
         this.connection = mqtt.connect(protocole + this.host, options);

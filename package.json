@@ -1,6 +1,6 @@
 {
   "name": "@loc4atnt/node-red-contrib-mqtt-auto",
-  "version": "2.2.2-4",
+  "version": "2.2.2-5",
   "description": "Node group for NodeRed that maintains multiple MQTT connections and you can change connection credentials during runtime.",
   "dependencies": {
     "destr": "^2.0.3",
