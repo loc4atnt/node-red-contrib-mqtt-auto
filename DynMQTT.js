@@ -85,7 +85,6 @@ module.exports = class DynMQTT {
         this.host = config.host;
         this.user = config.user;
         this.password = config.password;
-
         this.key_path = config.key || false;
         this.cert_path = config.cert || false;
         this.ca_path = config.ca || false;
@@ -98,7 +97,29 @@ module.exports = class DynMQTT {
         this.status = false;
         this.status_callback = status_callback;
 
-        this.protocol = config.protocol || 'mqtt';// ws/mqtt
+        this.protocol = config.protocol || 'mqtt';// mqtt/mqtts/ws/wss
+
+        const isSecureProtocol = this.protocol === 'wss' || this.protocol === 'mqtts';
+        const hasKey = !!this.key_path;
+        const hasCert = !!this.cert_path;
+        const hasCa = !!this.ca_path;
+        const hasAnyTlsFile = hasKey || hasCert || hasCa;
+        const hasAllTlsFiles = hasKey && hasCert && hasCa;
+
+        // --- Validate TLS configuration for secure protocols
+        // If any TLS file is provided for a secure protocol, require all of them.
+        if (isSecureProtocol && hasAnyTlsFile && !hasAllTlsFiles) {
+            const errMsg = "Incomplete TLS configuration for secure protocol: 'key', 'cert' and 'ca' must all be provided.";
+            console.error(`MQTT: ${errMsg}`);
+            this.status = "error";
+            if (typeof this.status_callback === "function") {
+                this.status_callback({
+                    summary: { fill: "red", shape: "dot", text: errMsg }
+                });
+            }
+            this.connection = null;
+            return;
+        }
 
         this.change_status('initiated');
 
@@ -110,7 +131,7 @@ module.exports = class DynMQTT {
             reconnectPeriod: this.reconnect_t
         }
 
-        if (this.cert_path) {
+        if (hasAllTlsFiles) {
             options = Object.assign(options, {
                 rejectUnauthorized: false,
                 key: fs.readFileSync(this.key_path),
@@ -210,6 +231,10 @@ module.exports = class DynMQTT {
     }
 
     async subscribe(topic, callback) {
+        if (!this.connection) {
+            console.error(`MQTT: Cannot subscribe on client ${this.client_id} because connection is not established`);
+            return;
+        }
         let subTopic = DynMQTT.findTopic(topic, Object.keys(this.subscriptions))
         if (subTopic) {
             console.info(`MQTT: ${subTopic} already subscribed`);
@@ -228,6 +253,10 @@ module.exports = class DynMQTT {
     }
 
     async unsubscribe(topic) {
+        if (!this.connection) {
+            console.error(`MQTT: Cannot unsubscribe on client ${this.client_id} because connection is not established`);
+            return false;
+        }
         let subTopic = DynMQTT.findTopic(topic, Object.keys(this.subscriptions))
         if (subTopic) {
             try {
